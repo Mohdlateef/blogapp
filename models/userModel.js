@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const userSchema = require("../schemas/userSchema");
-const { response } = require("express");
+// const { response } = require("express");
  // registerUser
 
 const User = class {
@@ -50,11 +50,13 @@ const hashPassword=await bcrypt.hash(this.password,Number(process.env.SALT))
     });
   }
   static findUserWithLoginId({loginId}){
-  
-    return new Promise( async(response,reject)=>{
+  // console.log(loginId);
+    return new Promise( async(resolve,reject)=>{
       try {
-        const userDb=await userSchema.findOne({$or:[{email:loginId,username:loginId}]})
+        const userDb=await userSchema.findOne({$or:[{email:loginId},{username:loginId}]})
+      //  console.log(userDb,57);
         if(!userDb) reject("user not found please login again")
+        
           resolve(userDb);
       } catch (error) {
         reject(error)
