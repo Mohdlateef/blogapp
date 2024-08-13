@@ -2,6 +2,7 @@ const bcrypt=require("bcrypt")
 const User = require("../models/userModel");
 const {userValidation}=require("../utils/authUtils")
 const { connection } = require("mongoose");
+const mongoose=require("mongoose")
 
 const registerControler=async(req,res)=>{
     // console.log(req.body)
@@ -46,29 +47,36 @@ const loginControler=async(req,res)=>{
  const {loginId,password}=req.body;
   console.log(loginId);
 //  find user in db
+try {
 const userDb=await User.findUserWithLoginId({loginId});
-
-// compare password
 const isMatch=await bcrypt.compare(password,userDb.password)
 if(!isMatch){
-    return res.send({
-        status:400,
-        message:"incorrect password"
-    });}
-    console.log(req.session,58);
+  return res.send({
+      status:400,
+      message:"incorrect password"
+  });}
+  console.log(req.session,58);
 
-    req.session.isAuth=true;
-    req.session.User={
-        userId:userDb._id,
-        username:userDb.name,
-        email:userDb.email,
+  req.session.isAuth=true;
+  req.session.User={
+      userId:userDb._id,
+      username:userDb.name,
+      email:userDb.email,
 
-    }
+  }
 return res.send({
-    status:200,
-    message:"login secuessfully",
-    data:userDb,
+  status:200,
+  message:"login secuessfully",
+  data:userDb,
 })
+} catch (error) {
+  res.send({
+    status:400,
+    error:error
+  })
+}
+// compare password
+
 }
 
 // logout
@@ -89,5 +97,31 @@ const logoutController = async (req, res) => {
   
 
 
+// logoutfromallDevices
+const logoutFromAllController=async (req,res)=>{
+const userId=req.session.User.userId;
+const sessionSchema=new mongoose.Schema({
+  _id:String
+},
+{
+  strict:false,
+})
+const sessionModel=mongoose.model("session",sessionSchema);
 
-module.exports={registerControler,loginControler,logoutController}
+// delete all entries of user from DB
+try {
+  const deleteDb=await sessionModel.deleteMany({"session.User.userId":userId})
+  console.log
+  return res
+  .status(200)
+  .json(`Logout from ${deleteDb.deletedCount} devices successfull`);
+  
+} catch (error) {
+  return res.status(500).json(error);
+}
+
+}
+
+
+
+module.exports={registerControler,loginControler,logoutController,logoutFromAllController}

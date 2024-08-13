@@ -54,8 +54,8 @@ const hashPassword=await bcrypt.hash(this.password,Number(process.env.SALT))
     return new Promise( async(resolve,reject)=>{
       try {
         const userDb=await userSchema.findOne({$or:[{email:loginId},{username:loginId}]})
-      //  console.log(userDb,57);
-        if(!userDb) reject("user not found please login again")
+       console.log(userDb,57);
+        if(!userDb) reject("user not found please please regiter first")
         
           resolve(userDb);
       } catch (error) {
