@@ -7,7 +7,9 @@ const mongoDbSession=require("connect-mongodb-session")(session);
 
 // fileimporst
 const db=require("./db");
+const isAuth = require("./middlewares/authmiddleware");
 const authRouter = require("./routers/authRouter");
+const blogrouter = require("./routers/blogRouter");
 
 //**constants */
 
@@ -35,8 +37,10 @@ app.use(session({
     resave:false,
     saveUninitialized:false,
 }))
+
 app.use('/auth',authRouter)
 
+app.use('/blog',isAuth,blogrouter)
 
 
 
