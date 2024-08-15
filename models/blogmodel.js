@@ -1,3 +1,4 @@
+const { response } = require("express")
 const{LIMIT}=require("../privateContants")
 const blogschema=require("../schemas/blogschema")
 const createBlogs=({title,textbody,userId})=>{
@@ -33,7 +34,25 @@ const getBlogs=({SKIP})=>{
      
     })
 }
+const getMyBlogs=({SKIP,userId})=>{
+  return new Promise(async (resolve,reject)=>{
+   try {
+    const myblogs= await blogschema.aggregate([
+      { $match:{userId:userId},},
+      { $sort:{creationDateTime:-1},},
+      {$skip:SKIP},
+      {$limit:LIMIT},
+   
+ ])
+ resolve(myblogs)
+   } catch (error) {
+    reject(error)
+   } 
 
 
 
-module.exports={createBlogs,getBlogs}
+  })
+}
+
+
+module.exports={createBlogs,getBlogs,getMyBlogs}

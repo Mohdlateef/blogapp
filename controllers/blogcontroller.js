@@ -1,5 +1,6 @@
 const{createBlogs
-    ,getBlogs
+    ,getBlogs,
+    getMyBlogs
      } =require("../models/blogmodel")
 
 
@@ -54,5 +55,30 @@ const getBlogsController=async (req,res)=>{
   }
  }
 
+ const getMyBlogsController=async (req,res)=>{
+  const userId=req.session.User.userId;
+  const SKIP=(req.query.skip)||0;
+  try {
+    const myBlogsDb=await getMyBlogs({SKIP,userId})
+    if (myBlogsDb.length === 0) {
+      return res.send({
+        status: 204,
+        message: "No blogs found",
+      });
+    }
+    return res.send({
+      status: 200,
+      message: "Read success",
+      data: myBlogsDb,
+    });
+  } catch (error) {
+    return res.send({
+      status:500,
+      message:"internal server error",
+      error:error
+    })
+  }
+ 
+ }
 
-module.exports={createBlogsController,getBlogsController}
+module.exports={createBlogsController,getBlogsController,getMyBlogsController}

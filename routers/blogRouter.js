@@ -1,19 +1,15 @@
-const express=require("express");
-const { createBlogsController
-     , getBlogsController} = require("../controllers/blogcontroller");
+const express = require("express");
+const {
+  createBlogsController,
+  getBlogsController,
+  getMyBlogsController,
+} = require("../controllers/blogcontroller");
 
-
-
-
-const blogrouter=express.Router();
-
+const blogrouter = express.Router();
 
 blogrouter
-.post("/createBlogs",createBlogsController)
-.get("/getBlogs",getBlogsController);
+  .post("/createBlogs", createBlogsController)
+  .get("/getBlogs", getBlogsController)
+  .get("/getMyBlogs", getMyBlogsController);
 
-
-
-
-
-module.exports=blogrouter;
+module.exports = blogrouter;
